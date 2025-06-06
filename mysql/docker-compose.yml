@@ -1,0 +1,15 @@
+services:
+  mysql:
+    container_name: 'mysql'
+    restart: unless-stopped
+    image: mysql
+    environment:
+      - MYSQL_DATABASE=main
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
+    ports:
+      - "3307:3306"
+    volumes:
+       - ./my.cnf:/etc/mysql/conf.d/my.cnf
+       - ./volume:/var/lib/mysql
