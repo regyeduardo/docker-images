@@ -1,1 +1,4 @@
-**/volume
+**/volume/**
+.vscode/settings.json
+localstack/.python-version
+**/.venv
