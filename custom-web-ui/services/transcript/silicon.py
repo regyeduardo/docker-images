@@ -54,9 +54,18 @@ def _build_url() -> str:
 def _parse_response(response: requests.Response) -> str:
     """Extrai o texto da resposta da API (JSON ou text/plain)."""
     ct = response.headers.get("Content-Type", "")
+    logger.debug("SiliconFlow response Content-Type: %s", ct)
+    logger.debug("SiliconFlow response status: %d", response.status_code)
     if "application/json" in ct:
         body = response.json()
-        return body.get("text", str(body))
+        logger.debug("SiliconFlow response body (JSON): %s", str(body)[:1000])
+        # Log the actual keys present in the response
+        if isinstance(body, dict):
+            logger.info("SiliconFlow response keys: %s", list(body.keys()))
+        text = body.get("text", str(body))
+        logger.info("SiliconFlow extracted text length: %d, text preview: %s", len(text), text[:200])
+        return text
+    logger.info("SiliconFlow response body (text/plain): %s", response.text[:500])
     return response.text
 
 

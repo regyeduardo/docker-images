@@ -156,6 +156,12 @@ def montar_conteudo_multimodal(
 
             transcricao = transcrever_audio(file_path)
 
+        logger.info(
+            "Transcrição recebida do provedor: length=%d, preview='%s'",
+            len(transcricao),
+            transcricao[:300],
+        )
+
         content_parts.append(
             {
                 "type": "text",

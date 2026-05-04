@@ -67,7 +67,6 @@ def _build_url() -> str:
         f"{base}/v1/listen"
         f"?model={DEEPGRAM_MODEL}"
         f"&smart_format=true"
-        f"&language=pt"
         f"&punctuate=true"
     )
 
@@ -95,6 +94,10 @@ def _parse_response(response: requests.Response) -> str:
             f"Resposta inválida da Deepgram (não-JSON): {response.text[:500]}"
         ) from exc
 
+    logger.debug("Deepgram response status: %d", response.status_code)
+    logger.debug("Deepgram response body keys: %s", list(body.keys()))
+    logger.debug("Deepgram response body (full): %s", str(body)[:2000])
+
     # Verifica erro na resposta
     if "err_code" in body or "err_msg" in body:
         err_code = body.get("err_code", body.get("code", "desconhecido"))
@@ -105,6 +108,11 @@ def _parse_response(response: requests.Response) -> str:
 
     try:
         transcript = body["results"]["channels"][0]["alternatives"][0]["transcript"]
+        logger.info(
+            "Deepgram transcript extracted: length=%d, preview='%s'",
+            len(transcript),
+            transcript[:200],
+        )
         return transcript.strip()
     except (KeyError, IndexError, TypeError) as exc:
         logger.error("Resposta Deepgram inesperada: %s", body)
