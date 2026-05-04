@@ -1,0 +1,19 @@
+services:
+  web:
+    build: .
+    container_name: custom-web-ui
+    ports:
+      - "8080:80"
+    volumes:
+      - ./volume:/data/uploads
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/api/deepseek-status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

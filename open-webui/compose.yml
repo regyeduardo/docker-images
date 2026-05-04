@@ -1,0 +1,22 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # volumes:
+    #   - ./volume:/app/backend/data
+    environment:
+      # OPENAI_API_BASE_URL: "http://host.docker.internal:8080/v1"
+      # OPENAI_API_KEY: "sk-dummy"
+      # ENABLE_OLLAMA_API: "false"
+      OLLAMA_BASE_URL: "http://host.docker.internal:11434"
+      MAX_UPLOAD_SIZE: "10737418240"
+      CONTENT_LENGTH_LIMIT: "10737418240"
+      WEBUI_NAME: "LLaMA Local"
+      DEFAULT_LOCALE: "pt-BR"   
+      ENABLE_SIGNUP: "false"
+      WEBUI_AUTH: "false"

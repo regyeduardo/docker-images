@@ -2,3 +2,6 @@
 .vscode/settings.json
 localstack/.python-version
 **/.venv
+**/__pycache__/**
+.vscode
+**/.env

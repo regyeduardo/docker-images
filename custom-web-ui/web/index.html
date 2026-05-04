@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agentes de Análise de Conteúdo</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="index.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mb-3">🤖 Agentes de Análise de Conteúdo</h1>
+
+      <div class="row">
+        <div class="col-lg-5">
+          <!-- Card: Origem do Conteúdo -->
+          <div class="card">
+            <div class="card-body">
+              <div class="section-header">
+                <h5>1. Origem do Conteúdo</h5>
+                <span class="badge bg-info">Upload único</span>
+              </div>
+              <p class="text-muted small">Escolha uma opção de entrada:</p>
+
+              <!-- Radio: Upload de Arquivo -->
+              <div class="input-mode-option mb-1 selected" id="modeFileCard" data-mode="file">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inputMode"
+                    id="modeFile"
+                    value="file"
+                    checked
+                  />
+                  <label class="form-check-label fw-medium" for="modeFile" style="font-size:0.85rem">
+                    📁 Upload de Arquivo
+                  </label>
+                </div>
+                <div class="input-mode-content" id="fileContent">
+                  <input
+                    class="form-control"
+                    type="file"
+                    id="uploadFile"
+                    accept=".mp4,.webm,.avi,.mkv,.mov,.flv,.wmv,.mp3,.wav,.ogg,.m4a,.flac,.aac,.wma,.pdf,.doc,.docx,.txt,.md,.csv,.json,.xml,.html"
+                  />
+                  <div class="file-types-badge mt-1">
+                    <span>🎬 Vídeo</span>
+                    <span>🎵 Áudio</span>
+                    <span>📄 PDF</span>
+                    <span>📝 Word</span>
+                    <span>📃 Texto</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Radio: YouTube URL -->
+              <div class="input-mode-option mb-1" id="modeYoutubeCard" data-mode="youtube">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inputMode"
+                    id="modeYoutube"
+                    value="youtube"
+                  />
+                  <label class="form-check-label fw-medium" for="modeYoutube" style="font-size:0.85rem">
+                    🔗 Link do YouTube
+                  </label>
+                </div>
+                <div class="input-mode-content" id="youtubeUrlContent" style="display: none;">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="youtubeUrl"
+                    placeholder="https://youtu.be/... (apenas YouTube)"
+                  />
+                  <div class="file-types-badge mt-1">
+                    <span>🎬 Apenas YouTube</span>
+                    <span>🚫 Outros links não são aceitos</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Agente + Modelo (compactado) -->
+          <div class="card">
+            <div class="card-body">
+              <div class="section-header">
+                <h5>2. Selecione o Agente</h5>
+                <span class="badge bg-secondary">🧠 DeepSeek</span>
+              </div>
+              <p class="text-muted small">Escolha como o conteúdo será processado:</p>
+
+              <div class="d-flex gap-2 mb-2">
+                <!-- Agente Resumidor -->
+                <div class="agent-card selected" id="agentResumidorCard">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="aiAgent"
+                      id="agentResumidor"
+                      value="resumidor"
+                      checked
+                    />
+                  </div>
+                  <div class="agent-icon">📋</div>
+                  <div class="agent-name">Resumidor</div>
+                  <div class="agent-desc">Resumo detalhado</div>
+                </div>
+
+                <!-- Agente Educador (com elementos didáticos) -->
+                <div class="agent-card" id="agentEducadorCard">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="aiAgent"
+                      id="agentEducador"
+                      value="educador"
+                    />
+                  </div>
+                  <div class="agent-icon">🎓</div>
+                  <div class="agent-name">Educador</div>
+                  <div class="agent-desc">Aula c/ diagramas</div>
+                </div>
+              </div>
+
+              <!-- DeepSeek model config -->
+              <div class="mb-1">
+                <label for="deepseekModel" class="form-label">Modelo DeepSeek</label>
+                <select class="form-select form-select-sm" id="deepseekModel">
+                  <option value="">Default (automático) ⭐</option>
+                  <option value="deepseek-v4-flash">deepseek-v4-flash</option>
+                  <option value="deepseek-v4-pro">deepseek-v4-pro</option>
+                </select>
+              </div>
+
+              <div class="mb-1">
+                <label for="prompt" class="form-label">Instruções adicionais (opcional)</label>
+                <textarea
+                  class="form-control"
+                  id="prompt"
+                  rows="2"
+                  placeholder="Ex: Dê ênfase em conceitos de arquitetura de software..."
+                ></textarea>
+              </div>
+              <button id="processBtn" class="btn btn-primary w-100">
+                ▶️ Processar Conteúdo
+              </button>
+            </div>
+          </div>
+          <div id="status" class="alert alert-info d-none" style="font-size:0.8rem;padding:8px"></div>
+        </div>
+
+        <div class="col-lg-7">
+          <div class="card">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0">📝 Resultado</h5>
+              <div class="d-flex gap-1">
+                <button
+                  id="obsidianBtn"
+                  class="btn btn-sm btn-outline-primary d-none"
+                >
+                  📓 Exportar para Obsidian
+                </button>
+                <button
+                  id="downloadBtn"
+                  class="btn btn-sm btn-outline-secondary d-none"
+                >
+                  ⬇️ Baixar MD
+                </button>
+              </div>
+            </div>
+            <div class="card-body markdown-body" id="output">
+              <p class="text-muted">O resultado aparecerá aqui...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      let generatedMarkdown = "";
+
+      // --- Input mode selection logic (mutually exclusive) ---
+      const modeRadios = document.querySelectorAll('input[name="inputMode"]');
+      const modeCards = {
+        file: document.getElementById("modeFileCard"),
+        youtube: document.getElementById("modeYoutubeCard"),
+      };
+      const modeContents = {
+        file: document.getElementById("fileContent"),
+        youtube: document.getElementById("youtubeUrlContent"),
+      };
+      const modeInputs = {
+        file: document.getElementById("uploadFile"),
+        youtube: document.getElementById("youtubeUrl"),
+      };
+
+      function selectMode(mode) {
+        Object.values(modeCards).forEach((card) =>
+          card.classList.remove("selected")
+        );
+        Object.values(modeContents).forEach((el) => (el.style.display = "none"));
+
+        if (mode && modeCards[mode]) {
+          modeCards[mode].classList.add("selected");
+          modeContents[mode].style.display = "block";
+        }
+      }
+
+      modeRadios.forEach((radio) => {
+        radio.addEventListener("change", () => {
+          if (radio.checked) {
+            selectMode(radio.value);
+            for (const [key, input] of Object.entries(modeInputs)) {
+              if (key !== radio.value) {
+                if (input.type === "file") input.value = "";
+                else input.value = "";
+              }
+            }
+          }
+        });
+      });
+
+      document.querySelectorAll(".input-mode-option").forEach((card) => {
+        card.addEventListener("click", (e) => {
+          if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+          const radio = card.querySelector('input[type="radio"]');
+          if (radio) {
+            radio.checked = true;
+            radio.dispatchEvent(new Event("change"));
+          }
+        });
+      });
+
+      // --- Agent selection (Resumidor / Educador) ---
+      const agentRadios = document.querySelectorAll('input[name="aiAgent"]');
+      const agentCards = {
+        resumidor: document.getElementById("agentResumidorCard"),
+        educador: document.getElementById("agentEducadorCard"),
+      };
+
+      function selectAgent(agent) {
+        Object.values(agentCards).forEach((card) =>
+          card.classList.remove("selected")
+        );
+        if (agentCards[agent]) {
+          agentCards[agent].classList.add("selected");
+        }
+      }
+
+      agentRadios.forEach((radio) => {
+        radio.addEventListener("change", () => {
+          if (radio.checked) {
+            selectAgent(radio.value);
+          }
+        });
+      });
+
+      document.querySelectorAll(".agent-card").forEach((card) => {
+        card.addEventListener("click", (e) => {
+          if (e.target.tagName === "INPUT") return;
+          const radio = card.querySelector('input[type="radio"]');
+          if (radio) {
+            radio.checked = true;
+            radio.dispatchEvent(new Event("change"));
+          }
+        });
+      });
+
+      // --- Process button ---
+      document
+        .getElementById("processBtn")
+        .addEventListener("click", async () => {
+          const btn = document.getElementById("processBtn");
+          btn.disabled = true;
+          const status = document.getElementById("status");
+          status.classList.remove("d-none");
+          status.textContent =
+            "Processando... Aguarde (pode levar vários minutos).";
+
+          const agent = document.querySelector('input[name="aiAgent"]:checked')?.value || "resumidor";
+          const model = document.getElementById("deepseekModel").value;
+
+          const formData = new FormData();
+          formData.append("agent", agent);
+          formData.append("prompt", document.getElementById("prompt").value);
+          formData.append("model", model);
+
+          const selectedMode = document.querySelector(
+            'input[name="inputMode"]:checked'
+          )?.value;
+
+          if (selectedMode === "youtube") {
+            const youtubeUrl = document.getElementById("youtubeUrl").value.trim();
+            if (!youtubeUrl) {
+              alert("Por favor, insira uma URL do YouTube.");
+              btn.disabled = false;
+              status.classList.add("d-none");
+              return;
+            }
+            const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/|shorts\/|live\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}/;
+            if (!youtubeRegex.test(youtubeUrl)) {
+              alert("Apenas links do YouTube (youtube.com ou youtu.be) são aceitos.\n\nPara outros vídeos, use a opção 'Upload de Arquivo'.");
+              btn.disabled = false;
+              status.classList.add("d-none");
+              return;
+            }
+            formData.append("youtube_url", youtubeUrl);
+          } else if (selectedMode === "file") {
+            const uploadFile = document.getElementById("uploadFile").files[0];
+            if (!uploadFile) {
+              alert("Por favor, selecione um arquivo.");
+              btn.disabled = false;
+              status.classList.add("d-none");
+              return;
+            }
+            formData.append("file", uploadFile);
+          } else {
+            alert("Por favor, selecione um modo de entrada.");
+            btn.disabled = false;
+            status.classList.add("d-none");
+            return;
+          }
+
+          try {
+            const res = await fetch("/api/process", {
+              method: "POST",
+              body: formData,
+            });
+            const text = await res.text();
+            let data;
+            try {
+              data = JSON.parse(text);
+            } catch (parseErr) {
+              console.error("Resposta não-JSON do /api/process:", text.slice(0, 1000));
+              throw new Error(
+                "Erro interno do servidor. Resposta inválida recebida.\n" +
+                (res.ok ? "" : ` (HTTP ${res.status})`)
+              );
+            }
+            if (data.error) throw new Error(data.error);
+            generatedMarkdown = data.markdown;
+            document.getElementById("output").innerHTML = marked.parse(
+              data.markdown,
+            );
+            document.getElementById("downloadBtn").classList.remove("d-none");
+            document.getElementById("obsidianBtn").classList.remove("d-none");
+            // Renderizar diagramas Mermaid
+            if (typeof mermaid !== "undefined") {
+              setTimeout(() => {
+                mermaid.run({ nodes: document.querySelectorAll(".markdown-body .language-mermaid") });
+              }, 200);
+            }
+          } catch (e) {
+            document.getElementById("output").innerHTML =
+              `<div class="alert alert-danger">${e.message}</div>`;
+          } finally {
+            btn.disabled = false;
+            status.classList.add("d-none");
+          }
+        });
+
+      /**
+       * Extracts the title from the generated markdown to use as filename.
+       * Looks for the first heading (# Title) and sanitizes it for use as a filename.
+       * Falls back to a generic name if no title is found.
+       */
+      function getTitleFromMarkdown(markdown) {
+        if (!markdown) return null;
+        // Match the first H1 heading: "# Title" or "# 🎓 Aula: Title" etc.
+        const match = markdown.match(/^#\s+(.*?)(?:\n|$)/m);
+        if (!match) return null;
+        let title = match[1].trim();
+        // Remove common emoji prefixes like "🎓 Aula:", "📋", etc.
+        title = title.replace(/^[^\w\s]{1,3}\s*/, ""); // remove leading emoji
+        title = title.replace(/^(Aula|Resumo|Documento)[:\s]*/i, ""); // remove "Aula:", "Resumo:" etc.
+        title = title.trim();
+        if (!title) return null;
+        // Sanitize for filename: remove chars not safe for filenames
+        title = title
+          .replace(/[<>:"/\\|?*]/g, "")     // remove invalid filename chars
+          .replace(/\s+/g, "-")              // spaces -> hyphens
+          .replace(/-+/g, "-")               // collapse multiple hyphens
+          .replace(/^-+|-+$/g, "")           // trim leading/trailing hyphens
+          .toLowerCase()
+          .slice(0, 80);                     // limit length
+        return title || null;
+      }
+
+      /**
+       * Triggers a file download with a filename derived from the markdown title.
+       */
+      function downloadMarkdown(filenameSuffix) {
+        const title = getTitleFromMarkdown(generatedMarkdown);
+        const baseName = title || "conteudo-gerado";
+        const suffix = filenameSuffix || "";
+        const filename = baseName + suffix + ".md";
+        const blob = new Blob([generatedMarkdown], { type: "text/markdown" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      // --- Download button ---
+      document.getElementById("downloadBtn").addEventListener("click", () => {
+        downloadMarkdown("");
+      });
+
+      // --- Obsidian export button ---
+      document.getElementById("obsidianBtn").addEventListener("click", () => {
+        downloadMarkdown("--obsidian");
+      });
+
+    </script>
+  </body>
+</html>
