@@ -220,6 +220,16 @@ def deepseek_status():
     )
 
 
+@app.route("/api/config")
+def config():
+    """Retorna configurações do backend para o frontend."""
+    return jsonify(
+        {
+            "transcription_provider": TRANSCRIPTION_PROVIDER,
+        }
+    )
+
+
 @app.route("/api/process", methods=["POST"])
 def process():
     """
@@ -239,9 +249,11 @@ def process():
     if not model or model.strip() == "" or model.strip().lower() == "default":
         model = None
     agent = request.form.get("agent", "resumidor")
+    language = request.form.get("language", "").strip() or None
     logger.info("=== Nova requisição /api/process ===")
     logger.info("model: %s", model)
     logger.info("agent: %s", agent)
+    logger.info("language: %s", language or "(não especificado)")
     logger.info("prompt: %s", prompt[:100] if prompt else "(vazio)")
 
     # Seleciona o system prompt baseado no agente final
@@ -338,6 +350,7 @@ def process():
         content_parts = montar_conteudo_multimodal(
             file_path,
             prompt,
+            language=language,
         )
 
         logger.info(

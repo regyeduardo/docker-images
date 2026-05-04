@@ -87,6 +87,44 @@
             </div>
           </div>
 
+          <!-- Card: Idioma da Mídia (only visible when Deepgram is the transcription provider) -->
+          <div class="card language-selector d-none" id="languageSelector">
+            <div class="card-body">
+              <div class="section-header">
+                <h5>🌐 Idioma da Mídia</h5>
+                <span class="badge bg-success">Deepgram</span>
+              </div>
+              <p class="text-muted small">
+                Selecione o idioma do áudio/vídeo para melhor precisão na transcrição.
+                Disponível para upload de arquivo e links do YouTube.
+              </p>
+              <select class="form-select form-select-sm" id="languageSelect">
+                <option value="">Detecção automática 🌍</option>
+                <option value="pt">Português 🇧🇷</option>
+                <option value="en">Inglês 🇺🇸</option>
+                <option value="es">Espanhol 🇪🇸</option>
+                <option value="fr">Francês 🇫🇷</option>
+                <option value="de">Alemão 🇩🇪</option>
+                <option value="it">Italiano 🇮🇹</option>
+                <option value="ja">Japonês 🇯🇵</option>
+                <option value="ko">Coreano 🇰🇷</option>
+                <option value="zh">Chinês 🇨🇳</option>
+                <option value="ar">Árabe 🇸🇦</option>
+                <option value="ru">Russo 🇷🇺</option>
+                <option value="nl">Holandês 🇳🇱</option>
+                <option value="pl">Polonês 🇵🇱</option>
+                <option value="sv">Sueco 🇸🇪</option>
+                <option value="da">Dinamarquês 🇩🇰</option>
+                <option value="no">Norueguês 🇳🇴</option>
+                <option value="fi">Finlandês 🇫🇮</option>
+                <option value="tr">Turco 🇹🇷</option>
+                <option value="hi">Hindi 🇮🇳</option>
+                <option value="th">Tailandês 🇹🇭</option>
+                <option value="vi">Vietnamita 🇻🇳</option>
+              </select>
+            </div>
+          </div>
+
           <!-- Card: Agente + Modelo (compactado) -->
           <div class="card">
             <div class="card-body">
@@ -193,6 +231,20 @@
     <script>
       let generatedMarkdown = "";
 
+      // --- Fetch backend config on load to show/hide Deepgram-only options ---
+      (async function loadConfig() {
+        try {
+          const res = await fetch("/api/config");
+          const config = await res.json();
+          const languageSelector = document.getElementById("languageSelector");
+          if (config.transcription_provider === "deepgram") {
+            languageSelector.classList.remove("d-none");
+          }
+        } catch (e) {
+          console.warn("Não foi possível carregar config do backend:", e);
+        }
+      })();
+
       // --- Input mode selection logic (mutually exclusive) ---
       const modeRadios = document.querySelectorAll('input[name="inputMode"]');
       const modeCards = {
@@ -298,6 +350,7 @@
           formData.append("agent", agent);
           formData.append("prompt", document.getElementById("prompt").value);
           formData.append("model", model);
+          formData.append("language", document.getElementById("languageSelect").value);
 
           const selectedMode = document.querySelector(
             'input[name="inputMode"]:checked'

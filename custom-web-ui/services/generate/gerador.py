@@ -83,6 +83,7 @@ def extrair_texto_documento(file_path: Path) -> str:
 def montar_conteudo_multimodal(
     file_path: Path,
     prompt: str,
+    language: Optional[str] = None,
 ) -> list:
     """
     Constrói o array de content parts para enviar ao DeepSeek.
@@ -91,6 +92,12 @@ def montar_conteudo_multimodal(
     Para texto/documentos: extrai e envia como texto.
     Para mídia (vídeo/áudio): usa o TRANSCRIPTION_PROVIDER definido
     no ambiente (compose.yml) para escolher o módulo de transcrição.
+
+    Args:
+        file_path: Caminho para o arquivo.
+        prompt: Instruções adicionais do usuário.
+        language: Código do idioma para transcrição (ex: "pt", "en", "es").
+                  Atualmente usado apenas pelo provedor Deepgram.
     """
     ext = get_file_extension(file_path.name)
     file_size_mb = file_path.stat().st_size / (1024 * 1024)
@@ -150,7 +157,7 @@ def montar_conteudo_multimodal(
         elif TRANSCRIPTION_PROVIDER == "deepgram":
             from services.transcript.deepgram import transcrever as transcrever_audio
 
-            transcricao = transcrever_audio(file_path)
+            transcricao = transcrever_audio(file_path, language=language)
         else:
             from services.transcript.silicon import transcrever as transcrever_audio
 

@@ -50,10 +50,14 @@ _DEEPGRAM_RETRY_BACKOFF = [1, 4, 10]
 _DEEPGRAM_MAX_FILE_BYTES = 100 * 1024 * 1024  # 100 MB
 
 
-def _build_url() -> str:
+def _build_url(language: Optional[str] = None) -> str:
     """
     Monta a URL REST de transcrição a partir da base configurada.
     Usa a API v1/listen — compatível com nova-2, nova-3 e todos os modelos.
+
+    Args:
+        language: Código do idioma (ex: "pt", "en", "es") para hint de linguagem.
+                  Só é enviado se explicitamente fornecido.
     """
     base = DEEPGRAM_BASE_URL.rstrip("/")
 
@@ -63,12 +67,17 @@ def _build_url() -> str:
             base = base[: -len(suffix)]
             break
 
-    return (
+    url = (
         f"{base}/v1/listen"
         f"?model={DEEPGRAM_MODEL}"
         f"&smart_format=true"
         f"&punctuate=true"
     )
+
+    if language:
+        url += f"&language={language}"
+
+    return url
 
 
 def _parse_response(response: requests.Response) -> str:
@@ -126,6 +135,7 @@ def _transcrever_chunk(
     transcription_url: str,
     chunk_index: int,
     total_chunks: int,
+    language: Optional[str] = None,
 ) -> str:
     """
     Envia um único chunk de áudio para a Deepgram via REST API e retorna a transcrição.
@@ -238,7 +248,7 @@ def _transcrever_chunk(
     )
 
 
-def transcrever(file_path: Path) -> str:
+def transcrever(file_path: Path, language: Optional[str] = None) -> str:
     """
     Transcreve o áudio de um arquivo de mídia usando a API REST do Deepgram (v1/listen).
 
@@ -248,6 +258,11 @@ def transcrever(file_path: Path) -> str:
       3. Para cada chunk, envia o WAV como raw binary via POST para a Deepgram
       4. Concatena todas as transcrições em ordem
       5. Retorna o texto completo transcrito
+
+    Args:
+        file_path: Caminho para o arquivo de mídia.
+        language: Código do idioma (ex: "pt", "en", "es") para hint de linguagem.
+                  Só é enviado para a Deepgram se explicitamente fornecido.
     """
     if not file_path.exists():
         raise FileNotFoundError(f"Arquivo não encontrado: {file_path}")
@@ -266,11 +281,12 @@ def transcrever(file_path: Path) -> str:
         ext,
     )
 
-    transcription_url = _build_url()
+    transcription_url = _build_url(language=language)
     logger.info(
-        "URL Deepgram: %s (modelo: %s)",
+        "URL Deepgram: %s (modelo: %s, language: %s)",
         transcription_url,
         DEEPGRAM_MODEL,
+        language or "(não especificado)",
     )
 
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
@@ -297,6 +313,7 @@ def transcrever(file_path: Path) -> str:
                 transcription_url,
                 chunk_index=1,
                 total_chunks=1,
+                language=language,
             )
 
         logger.info(
@@ -319,6 +336,7 @@ def transcrever(file_path: Path) -> str:
                 transcription_url,
                 chunk_index=i,
                 total_chunks=total_chunks,
+                language=language,
             )
             transcricoes.append(transcricao)
 
