@@ -194,6 +194,90 @@ def montar_conteudo_multimodal(
     return content_parts
 
 
+# ── Pós-processamento pós-LLM ──────────────────────────────────────────────
+
+
+def _substituir_literal_backslash_n(mermaid_code: str) -> str:
+    """
+    Substitui ocorrências de \\n literal (dois caracteres: backslash + n)
+    por quebras de linha reais dentro de código Mermaid.
+
+    LLMs frequentemente geram `\\n` em vez de quebras de linha reais,
+    especialmente dentro de strings JSON (ex: campo `diagrama` no agente Provas).
+    Isso quebra a renderização do Mermaid.
+    """
+    return mermaid_code.replace("\\n", "\n")
+
+
+def _sanitizar_codigo_mermaid(mermaid_code: str) -> str:
+    """
+    Aplica correções adicionais em código Mermaid gerado por LLM.
+
+    1. Substitui \\n literal por quebras de linha reais.
+    2. Corrige aspas desbalanceadas (comum em output de LLM):
+       - [""texto""] → ["texto"] (simétrico)
+       - [""texto"]  → ["texto"] (abertura duplicada)
+       - ["texto""]  → ["texto"] (fechamento duplicado)
+       - Mesmo para labels { }
+    3. Remove linhas em branco consecutivas.
+    """
+    import re
+
+    # Passo 1: \\n literal → quebras de linha reais
+    code = _substituir_literal_backslash_n(mermaid_code)
+
+    # Passo 2: Corrige aspas desbalanceadas em labels Mermaid
+    # [^"\n] impede match cross-line (labels Mermaid são single-line)
+    # 2a: Simétricas [""texto""] → ["texto"]
+    code = re.sub(r'(\w+)\[""([^"\n]*)""\]', r'\1["\2"]', code)
+    code = re.sub(r'(\w+)\{""([^"\n]*)""\}', r'\1{"\2"}', code)
+    # 2b: Abertura duplicada [""texto"] → ["texto"]
+    code = re.sub(r'(\w+)\[""([^"\n]*)"\]', r'\1["\2"]', code)
+    code = re.sub(r'(\w+)\{""([^"\n]*)"\}', r'\1{"\2"}', code)
+    # 2c: Fechamento duplicado ["texto""] → ["texto"]
+    code = re.sub(r'(\w+)\["([^"\n]*?)""\]', r'\1["\2"]', code)
+    code = re.sub(r'(\w+)\{"([^"\n]*?)""\}', r'\1{"\2"}', code)
+
+    # Passo 3: Remove linhas em branco consecutivas (deixa no máximo 1)
+    code = re.sub(r"\n\s*\n", "\n", code)
+
+    return code.strip()
+
+
+def pos_processar_markdown(markdown: str) -> str:
+    """
+    Pós-processa o Markdown gerado pelo LLM para corrigir problemas comuns
+    de sintaxe Mermaid antes de enviar ao frontend.
+
+    Correções aplicadas:
+    - Substitui \\n literal por quebras de linha reais dentro de blocos ```mermaid
+    - Remove espaços em excesso
+    - Remove linhas em branco consecutivas
+
+    Args:
+        markdown: String Markdown bruta gerada pelo LLM.
+
+    Returns:
+        String Markdown com as correções aplicadas.
+    """
+    import re
+
+    # Padrão: encontra blocos ```mermaid ... ```
+    pattern = re.compile(
+        r"(```mermaid\s*\n?)(.*?)(\n?```)",
+        re.DOTALL,
+    )
+
+    def _replacer(match):
+        prefix = match.group(1)
+        code = match.group(2)
+        suffix = match.group(3)
+        corrected = _sanitizar_codigo_mermaid(code)
+        return f"{prefix}{corrected}{suffix}"
+
+    return pattern.sub(_replacer, markdown)
+
+
 # ── Geração de Markdown via DeepSeek ───────────────────────────────────────
 
 
@@ -230,7 +314,8 @@ def gerar_markdown(
             kwargs["model"] = model_name
 
         response = client.chat.completions.create(**kwargs)
-        return response.choices[0].message.content
+        markdown_raw = response.choices[0].message.content
+        return pos_processar_markdown(markdown_raw)
     except Exception as e:
         logger.error("Erro ao gerar conteúdo com DeepSeek: %s", str(e))
         raise

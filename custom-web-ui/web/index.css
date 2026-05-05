@@ -118,3 +118,290 @@ pre {
 .gap-2 { gap: 8px !important; }
 .mt-2 { margin-top: 8px !important; }
 p { margin-bottom: 8px; }
+
+/* ── Dropdown Opções ──────────────────────────────────────────── */
+.dropdown-menu .dropdown-item {
+  font-size: 0.88rem;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.dropdown-menu .dropdown-item:hover {
+  background-color: #e7f1ff;
+}
+
+/* ── Modal de Questões ────────────────────────────────────────── */
+#questionsModal .modal-header {
+  background: #f8f9fa;
+  border-bottom: 2px solid #0d6efd;
+}
+#questionsModal .modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+#questionsModal .modal-body {
+  padding: 20px;
+  background: #f8f9fa;
+}
+#questionsModal .modal-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
+/* ── Cards de Questões ────────────────────────────────────────── */
+.question-card {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s;
+}
+.question-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.question-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.question-number {
+  display: inline-block;
+  background: #0d6efd;
+  color: white;
+  font-weight: 600;
+  font-size: 0.78rem;
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+.question-enunciado {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.question-enunciado p {
+  margin-bottom: 6px;
+}
+.question-enunciado code {
+  font-size: 0.85rem;
+  background: #f0f0f0;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+.question-diagram {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+  overflow-x: auto;
+}
+.question-diagram pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+.question-diagram .mermaid {
+  text-align: center;
+}
+
+/* ── Alternativas ─────────────────────────────────────────────── */
+.question-alternatives {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.alternative-item {
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.alternative-item:hover {
+  border-color: #86b7fe;
+  background-color: #f0f7ff;
+}
+.alternative-item .form-check {
+  margin: 0;
+  min-height: auto;
+}
+.alternative-item .form-check-input {
+  margin-top: 3px;
+}
+.alternative-item .form-check-label {
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+.alternative-item.correct {
+  border-color: #198754 !important;
+  background-color: #d1e7dd !important;
+}
+.alternative-item.incorrect {
+  border-color: #dc3545 !important;
+  background-color: #f8d7da !important;
+}
+
+/* ── Feedback da Questão ──────────────────────────────────────── */
+.question-feedback {
+  margin-top: 8px;
+}
+.question-feedback .alert {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+}
+.question-feedback .alert strong {
+  font-size: 0.9rem;
+}
+
+/* ── Progresso das Questões ───────────────────────────────────── */
+.questions-progress {
+  text-align: right;
+  font-size: 0.82rem;
+}
+
+/* ── Fallback para Mermaid com erro ───────────────────────────── */
+.mermaid-fallback {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 0.82rem;
+  overflow-x: auto;
+}
+
+/* ── Checkbox Gerar Questões ──────────────────────────────────── */
+#generateQuestionsWrapper {
+  padding: 8px 12px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  font-size: 0.88rem;
+}
+#generateQuestionsWrapper .form-check-input:checked {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+/* ── Barra de Progresso das Questões ──────────────────────────── */
+.question-progress-bar {
+  background: white;
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid #dee2e6;
+}
+.question-progress-bar .progress {
+  background-color: #e9ecef;
+  border-radius: 3px;
+}
+.question-progress-bar .progress-bar {
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* ── Alternativa selecionada (antes da correção) ──────────────── */
+.alternative-item.selected {
+  border-color: #0d6efd !important;
+  background-color: #e7f1ff !important;
+}
+
+/* ── Modal de Resultado ───────────────────────────────────────── */
+#resultModal .modal-header {
+  background: #f8f9fa;
+  border-bottom: 2px solid #198754;
+}
+#resultModal .modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+#resultModal .modal-body {
+  padding: 20px;
+  background: #f8f9fa;
+}
+#resultModal .modal-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
+/* ── Score do Resultado ───────────────────────────────────────── */
+.result-score {
+  border: 2px solid #dee2e6;
+}
+.result-score h2 {
+  font-size: 2rem;
+}
+.result-emoji {
+  line-height: 1;
+}
+
+/* ── Cards de Resultado por Questão ───────────────────────────── */
+.result-question {
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s;
+}
+.result-question:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.result-question.correct {
+  border-left: 4px solid #198754 !important;
+}
+.result-question.incorrect {
+  border-left: 4px solid #dc3545 !important;
+}
+.result-enunciado {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.result-enunciado p {
+  margin-bottom: 6px;
+}
+.result-alternatives .alternative-item {
+  border-width: 1px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  cursor: default;
+}
+.result-alternatives .alternative-item.correct {
+  border-color: #198754 !important;
+  background-color: #d1e7dd !important;
+}
+.result-alternatives .alternative-item.incorrect {
+  border-color: #dc3545 !important;
+  background-color: #f8d7da !important;
+}
+.result-explicacao {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  border: 1px solid #e9ecef;
+}
+.result-explicacao small {
+  color: #495057;
+}
+
+/* ── Botões de navegação no footer ────────────────────────────── */
+#questionsFooter .btn {
+  min-width: 120px;
+}
+#prevQuestionBtn,
+#nextQuestionBtn,
+#finishExamBtn,
+#exportZipBtn {
+  font-weight: 500;
+}
+
+/* ── Loading Overlay Content (inner) ──────────────────────────── */
+/* As regras de posicionamento/visibilidade do overlay agora são
+   gerenciadas inline via JS (showLoading/hideLoading) para evitar
+   conflitos de especificidade CSS com Bootstrap. */
+.loading-overlay-content {
+  text-align: center;
+  padding: 2rem;
+}
+.loading-overlay-content p {
+  font-size: 1.2rem;
+}
+.text-light-50 {
+  color: rgba(255, 255, 255, 0.6);
+}
